@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
@@ -13,41 +12,32 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'name',
-        'code',
-        'quantity',
+        'sku',
         'description',
-        'is_active',
-        'created_by',
+        'hpp',
+        'stock',
+        'status',
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
-        'is_active' => 'boolean',
+        'hpp' => 'decimal:2',
+        'stock' => 'integer',
     ];
 
-    public function createdBy(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class);
     }
 
-    public function hppDetail(): HasOne
+    public function sales(): HasMany
     {
-        return $this->hasOne(HppDetail::class);
+        return $this->hasMany(Sale::class);
     }
 
-    public function priceSimulations(): HasMany
+    public function inventories(): HasMany
     {
-        return $this->hasMany(PriceSimulation::class);
-    }
-
-    public function getHppPerPcsAttribute()
-    {
-        return $this->hppDetail?->hpp_per_pcs ?? 0;
-    }
-
-    public function getTotalHppAttribute()
-    {
-        return $this->hppDetail?->total_hpp ?? 0;
+        return $this->hasMany(Inventory::class);
     }
 }
